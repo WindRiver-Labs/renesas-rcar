@@ -1,0 +1,107 @@
+NOTE: The files contained in this directory are provided "as is".
+There is no warranty of fitness for any purpose or support provided
+by Wind River for bootloader.
+
+
+1. Bootloader Architecture
+--------------------------
+
+The bootloader consists of 6 partitions as below.
+Detail information, please refer to https://elinux.org/R-Car/Boards/H3SK, section [Flashing firmware].
+
+Filename 		Program Top Address 	Flash Save Address 	Description 
+bootparam_sa0.srec 	0xE6320000 		0x000000 		Loader(Boot parameter)
+bl2-h3ulcb.srec 	0xE6304000 		0x040000 		Loader
+cert_header_sa6.srec 	0xE6320000 		0x180000 		Loader(Certification)
+bl31-h3ulcb.srec 	0x44000000 		0x1C0000 		ARM Trusted Firmware
+tee-h3ulcb.srec 	0x44100000 		0x200000 		OP-Tee
+u-boot-elf-h3ulcb.srec 	0x50000000 		0x640000 		U-Boot 
+
+
+2. Source Code Repository
+-------------------------
+
+2.1 u-boot
+git://github.com/renesas-rcar/u-boot.git v2018.09/rcar-3.9.3
+
+2.2 ARM Trusted Firmware
+git://github.com/renesas-rcar/arm-trusted-firmware.git rcar_gen3
+
+2.3 optee-os
+git://github.com/renesas-rcar/optee_os.git rcar_gen3
+
+
+3. Update bootloader
+--------------------
+
+Detial steps as below, these steps are from link https://elinux.org/R-Car/Boards/H3SK#Flashing_firmware
+
+3.1 Power off the board
+Press SW8
+
+3.2 Set SW and JP as follows:
+SW1=OFF
+ ws1.0: SW6[all]=OFF
+ ws1.1/ws2.0: SW6[1]=ON, SW6[2]=ON, SW6[3]=OFF, SW6[4]=ON
+JP1 -> 1-2 short
+
+3.3 Power on the board
+Press SW8
+Terminal starts and provides prompts on console
+
+3.4 Change SW as follows
+SW1=ON
+ ws1.0: SW6[3]=ON
+ ws1.1: SW6[1]=OFF, SW6[3]=ON
+ ws2.0: SW6[3]=ON
+
+3.5. Flash bootparam_sa0.srec. In console execute xls2 command (load program to hyper flash) and provide the following inputs:
+3
+y
+e6320000
+0
+type "ctrl+A S" and select upload method "ascii", then choose file for uploading "bootparam_sa0.srec", after upload finished press any key
+y
+
+3.6 Flash bl2-h3ulcb.srec. In console execute xls2 command (load program to hyper flash) and provide the following inputs:
+3
+y
+e6304000 (e6302000 if using Yocto BSP versions v2.12 and v2.16)
+40000
+type "ctrl+A S" and select upload method "ascii", then choose file for uploading "bl2-h3ulcb.srec", after upload finished press any key
+y
+
+3.7 Flash cert_header_sa6.srec. In console execute xls2 command (load program to hyper flash) and provide the following inputs:
+3
+y
+e6320000
+180000
+type "ctrl+A S" and select upload method "ascii", then choose file for uploading "cert_header_sa6.srec", after upload finished press any key
+y
+
+3.8 Flash bl31-h3ulcb.srec. In console execute xls2 command (load program to hyper flash) and provide the following inputs:
+3
+y
+44000000
+1C0000
+type "ctrl+A S" and select upload method "ascii", then choose file for uploading "bl31-h3ulcb.srec", after upload finished press any key
+y
+
+3.9 Flash tee-h3ulcb.srec. In console execute xls2 command (load program to hyper flash) and provide the following inputs:
+3
+y
+44100000
+200000
+type "ctrl+A S" and select upload method "ascii", then choose file for uploading "tee-h3ulcb.srec", after upload finished press any key
+y
+
+3.10 Flash u-boot-elf.srec. In console execute xls2 command (load program to hyper flash) and provide the following inputs:
+3
+y
+50000000 (49000000 if using Yocto BSP version v2.12)
+640000
+type "ctrl+A S" and select upload method "ascii", then choose file for uploading "u-boot-elf.srec", after upload finished press any key
+y
+
+3.11 Reset the board
+Press SW9

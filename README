@@ -1,0 +1,358 @@
+	        H3SK/M3SK Board Support Package
+
+1. About this document
+======================
+
+This document describes common and non-hardware specific information.
+Please refer to README.hardware for hardware specific information.
+
+Dependencies
+------------
+This layer depends on the oe-core version supplied with Wind River
+Linux and the wrlinux layer.
+
+Maintenance
+-----------
+This layer is maintained by Wind River Systems, Inc.
+Contact <support@windriver.com> or your support representative for more
+information on submitting changes.
+
+Building the renesas-rcar layer
+-------------------------------
+This layer and wr-kernel layer should be added to bblayers.conf. This
+is done automatically when using the Wind River configure wrapper.
+
+License
+-------
+Copyright (C) 2019 Wind River Systems, Inc.
+
+The right to copy, distribute or otherwise make use of this software may
+be licensed only pursuant to the terms of an applicable Wind River license
+agreement. No license to Wind River intellectual properly rights is granted
+herein. All rights not licensed by Wind River are reserved by Wind River.
+
+Source code included in tree for individual recipes is under the LICENSE
+stated in each recipe (.bb file) unless other stated.
+
+2. BSP Kernel and Distros
+=========================
+
+The following table summarizes the valid Wind River Linux distros for this BSP.
+'Y' in each content cell stands for supported; 'N' stands for not supported:
+
+  +--------------+-------------+-------------+-------------+
+  | valid/distro |   wrlinux   | wrlinux-cgl | wrlinux-ovp |
+  +--------------+-------------+-------------+-------------+
+  |    valid     |      Y      |      N      |      N      |
+  +--------------+-------------+-------------+-------------+
+
+For the supported kernel type for this BSP, please check the TARGET_SUPPORTED_KTYPES
+by running 'bitbake -e virtual/kernel | grep "^TARGET_SUPPORTED_KTYPES="'.
+
+Note: The preempt-rt ktype is not available for this BSP/Machine at this time.
+
+
+3. Board Specific Patches
+=========================
+To get a list of patches applied to the kernel specific to this BSP,
+along with patch descriptions, use git to see what changed on the default
+kernel (git whatchanged <kernel_type>..<bsp_name>). For example:
+
+	# cd tmp-glibc/work-shared/renesas-rcar/kernel-source
+	# git whatchanged standard/base..
+
+
+4. Boot Instructions
+====================
+
+4.1 NFS Root File System
+------------------------
+
+4.1.1 Prepare Kernel, DTB, NFS and TFTP servers
+-----------------------------------------------
+The files in below example can be found in <buildprj>/tmp-glibc/deploy/images/renesas-rcar
+and are copied to the directory of the TFTP server.
+
+
+4.1.2 Set environments for booting image from network
+-----------------------------------------------------
+
+	# setenv ipaddr <board ip address>
+	# setenv netmask <board netmask>
+	# setenv gatewayip <gateway ip>
+	# setenv serverip <server ip address>
+
+4.1.3 Download kernel
+---------------------
+
+	# tftp 0x48080000 Image
+
+4.1.3 Download dtb
+------------------
+
+	# tftp 0x48080000 <Board Name>.dtb
+
+4.1.4 Set bootargs and boot system
+----------------------------------
+
+	# setenv bootargs console=ttySC0,115200n8 root=/dev/nfs rw nfsroot=<nfs server>:<nfs root>,v3,tcp \
+		 ip=<target IP>::<gateway>:<netmask>::eth0:off \
+	# booti 0x48080000 - 0x48000000
+
+
+5. Features
+===========
+
+5.1 Audio
+---------
+
+There are 2 codec chips on top-board(H3SK/M3SK) and base-board(Kingfisher) separately.
+codec ak4613 is on the top-board and codec pcm3168a is on base-board.
+We can switch sound card dynamically with below command:
+
+	# pactl set-default-sink <sound card>
+
+5.1.1 Audio playback with codec ak4613
+--------------------------------------
+
+<1>. switch to codec ak4613, output mode
+
+	# pactl set-default-sink ak4613_output
+
+<2>. Set output gain
+
+	# amixer -c 1 sset "DVC Out" 1%
+
+<3>. Play sound files
+
+	speaker-test -c 2 -t wav -W /usr/share/sounds/alsa/
+
+5.1.2 Audio capture with codec ak4613
+-------------------------------------
+
+<1>. switch to codec ak4613, input mode
+
+	# pactl set-default-source ak4613_input 
+
+<2>. Set input gain
+
+	# amixer -c 1 sset "DVC In" 5%
+
+<3>. Record sound
+
+	# arecord -r 44100 -f S16_LE -c 2 -d 5 record.wav
+
+<4>. palyback the record file
+	# pactl set-default-sink ak4613_output
+	# amixer -c 1 sset "DVC Out" 1%
+	# aplay record.wav
+
+5.1.3 Audio playback with codec pcm3168a
+----------------------------------------
+
+<1>. switch to codec pcm3168a, output mode
+
+	# pactl set-default-sink pcm3168a_output
+
+<2>. Play sound files
+
+	speaker-test -c 2 -t wav -W /usr/share/sounds/alsa/
+
+5.1.4 Audio capture with codec pcm3168a
+---------------------------------------
+
+<1>. switch to codec pcm3168a, input mode
+
+	# pactl set-default-source pcm3168a_input 
+
+<2>. Record sound
+
+	# arecord -r 44100 -f S16_LE -c 2 -d 5 record.wav
+
+<3>. palyback the record file
+	# pactl set-default-sink pcm3168a_output
+	# aplay record.wav
+
+5.2 CAN Bus
+-----------
+
+There are 2 CAN bus ports on base-board(Kingfisher), CN17 and CN18.
+Connect the 2 ports with cable and run below command to verify CAN bus feature.
+
+5.2.1 Set up can0 and can1
+--------------------------
+
+	# ip link set can0 up type can bitrate 125000
+	# ip link set can1 up type can bitrate 125000
+	# ifconfig can0 txqueuelen 1000
+	# ifconfig can1 txqueuelen 1000
+
+5.2.2 send data from can1 and dump data from can0
+-------------------------------------------------
+
+	# candump can0 &
+	# cangen can1
+	or
+	# cansend can1 5A1#11.22.33.44.55.66.77.88
+
+5.2.2 check the data sending and receiving on can0 and can1
+-----------------------------------------------------------
+
+	# ip -details -statistics link show can0
+	# ip -details -statistics link show can1
+
+5.3 suspend/resume
+------------------
+
+On renesas-rcar platform, only support for suspend to freeze witd below command:
+
+	# echo freeze > /sys/power/state
+
+System is able to be waked up by some external events. 
+For example, wake up system by console terminal.
+Enable serial wake up feature with below command before entering suspend status,
+and add no_console_suspend parameter in bootargs.
+
+	# echo enabled > /sys/bus/platform/drivers/sh-sci/e6e88000.serial/tty/ttySC0/power/wakeup
+
+Pressing any key can wake up system.
+
+Note:
+There is a known issue about usb3.0 on base-board(Kingfisher).
+When system resumes from suspend status, xhci controller can't communicate with
+external hub chip normally, the hub chip always return busy status and
+cause usb3.0 re-enable failed.
+
+
+5.4 USB feature
+---------------
+
+5.4.1 USB OTG Usage and verification
+------------------------------------
+
+1. Verify the OTG device mode
+
+Connect CN13 on base-board(Kingfisher) to the host machine.
+
+Run below command to simulate as u-disk:
+
+	# modprobe g_mass_storage file=/dev/mmcblk1p1 stall=0 removable=1
+
+2. Switch to OTG host mode
+
+Connect CN13 on base-board(Kingfisher) with U-disk.
+
+5.5 PCIe
+--------
+
+There is a mini-pcie port on base-board(Kingfisher) CN15.
+The following PCIe peripherals:
+
+	Intel Centrino Advanced-N 6200
+	Intel Centrino Wireless-N 1030
+
+ are used to verify PCIe feature with the following steps:
+
+Simply add line as follows to ${buildprj}/build/conf/local.conf:
+
+	KERNEL_FEATURES_append = " features/iwlwifi/iwlwifi.scc"
+
+This will include the iwlwifi and mac80211 kernel modules in
+the root filesystem.
+
+Built and install them:
+
+	# bitbake wrlinux-image-glibc-xxx
+
+Copy relevant WiFi card firmware (Intel 6200 WiFi firmware: iwlwifi-6000-4.ucode)
+of to /lib/firmware of the target image.
+
+Execute the following commands to validate the WiFi cards:
+
+	# ifconfig wlan0 up
+	# iw wlan0 scan
+	# iw dev wlan0 connect <AP essid>
+	# dhclient wlan0
+	# ping <AP address> -i wlan0 -c 5
+
+
+6. kexec/kdump
+==============
+
+You need to add feature/kexec,feature/kdump templates support as follow:
+
+	./wrlinux-x/setup.sh --machines renesas-rcar --templates feature/kexec,feature/kdump
+
+6.1 kexec
+---------
+
+	kexec -l  /root/Image.gz --append="`cat /proc/cmdline`"
+	kexec -e
+
+6.2 kdump
+---------
+
+Add crashkernel=460M@1280M to the kernel cmdline
+   kexec -p /root/Image.gz --append="$your-bootcmd"
+   echo c > /proc/sysrq-trigger
+
+Note:
+Before booting the second kernel, add "maxcpus=1 cma=128M" to the boot parameter.
+
+For more detailed info about kdump, refer to Documentation/kdump/kdump.txt
+in the kernel source tree.
+
+
+7. Creating Partitioned Images(WIC)
+===================================
+
+User can use the OpenEmbedded Image Creator, wic, to create the properly
+partitioned image on a SD card. The wic command
+generates partitioned images from existing OpenEmbedded build artifacts.
+User can refer to the below URL to get more WIC details:
+
+https://www.yoctoproject.org/docs/2.6/mega-manual/mega-manual.html#creating-partitioned-images-using-wic
+
+This BSP supports disk images for SD card.
+After build the project, user will get a WIC image under the directory
+tmp-glibc/deploy/images/<bsp name>/ ,such as:
+
+tmp-glibc/deploy/images/renesas-rcar/wrlinux-image-glibc-std-renesas-rcar.wic
+
+There are two partitions in this WIC images, the first one is to hold the boot
+images, the second is the related root file system.
+
+7.1 Burn images to SD card
+--------------------------
+
+To burn WIC images to SD card, run below command:
+
+	$ sudo dd if=wrlinux-image-glibc-<rootfs_type>-renesas-rcar.wic of=/dev/sdx
+
+7.2 Set uboot env
+-----------------
+
+Board can boot automatically by set the below uboot environment variables:
+
+=> setenv bootfile Image; setenv fdtfile r8a7795-h3ulcb-kf.dtb;  setenv loadaddr 0x48080000; setenv fdtaddr 0x48000000;
+
+=> setenv bootargs 'console=ttySC0,115200n8 root=/dev/mmcblk1p2 ignore_loglevel rw no_console_suspend rootwait ip=dhcp'
+
+=> setenv bootcmd 'fatload mmc 0:1 $loadaddr $bootfile; fatload mmc 0:1 $fdtaddr $fdtfile; booti $loadaddr - $fdtaddr';
+
+=> saveenv; run bootcmd;
+
+7.3 Delpoy sd card
+------------------
+
+Insert sd card into CN6 of the top-board(H3SK/M3SK)
+
+
+8. Multilib
+===========
+
+By default, this BSP is configured as a 64-bit kernel and 64-bit userspace.
+If a full 32-bit filesystem is necessary, use the prefix "lib32-" before
+the expected target image as follows:
+
+	# bitbake lib32-wrlinux-image-glibc-std

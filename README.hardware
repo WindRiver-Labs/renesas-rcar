@@ -1,0 +1,138 @@
+		H3SK/M3SK Support Package
+
+Table of Contents
+=================
+
+1. Supported Boards
+2. Change History
+3. BSP Features
+4. BSP Notes
+
+1. Supported Boards
+===================
+
+This BSP supports the following boards:
+
+   + R-CAR-H3: Board: H3SK + Kingfisher, RTP0RC77951SKBX010SA00, CPU: R8A7795 V2.0
+
+2. Change History
+=================
+
+  - 2019/09 (LINUXPG-12): Wind River Linux10.18 RCPL11, support H3SK/M3SK boards 
+			  based on Renesas SDK rcar-3.9.4
+
+3. BSP Features
+===============
+
+3.1 Supported Features
+======================
+
+This BSP supports the following features.
+
+  o General Platform
+	+ KGDBoC
+
+  o Bus
+	+ I2C: On-Chip I2C controller
+	+ PCIe: On-Chip PCIe controller
+	+ SPI: On-Chip SPI controller
+
+  o Network
+	+ Ethernet: AVB 100/1000 MAC ethernet controller
+
+  o USB
+	+ USB Host: 1 OHCI/EHCI compatible host controller in the chip
+		    1 XHCI compatible host controller in the chip
+	+ USB OTG: On-Chip UTMI transceiver, high/full/low speed
+
+  o Storage
+	+ SD/MMC: 2 SD card slot, one on the top-board(H3SK/M3SK), another is on the base-board(Kingfisher)
+	+ eMMC: support 1bit/4bit/8bit SDR/DDR mode, 8G bytes
+	+ Flash: HYPERFLASH 64 MB HYPER FLASH
+	         QSPI FLASH 16MB QSPI
+
+  o User_Interface_Multimedia
+	+ AUDIO:
+		+ AK4613VQ codec, on the top-board(H3SK/M3SK)
+		+ pcm3168a codec, on the base-board(Kingfisher)
+	+ HDMI: On-Chip HDMI controller
+
+  o Power Mgmt
+	+ Suspend to freeze
+	+ CPU Freq
+	+ CPU idle 
+
+  o Misc Devices
+	+ UART: On-Chip High-Speed UART
+	+ Watchdog: On-Chip H/W watchdog timer
+	+ GPIO: On-Chip general purpose Input/Output
+	+ Power Regulator: BD9571MWV-M PMIC power regulator
+	+ PWM: Pulse width modulator
+
+3.2 Limited Supported Features
+==============================
+
+3.3 Unsupported Features
+========================
+
+The following features are not supported and validated:
+
+	x Graphics/GPU driver (PowerVR Series6XT GX6650)
+	x Media encode
+	x LVDS out: There is no device to verify
+	x MIPI-CSI2: There is no device to verify
+	x MediaLB
+	x Secure Engine
+	x SIM card
+	x FM Multiplex Demodulator
+
+4. BSP Notes
+============
+
+4.1 Hardware Description
+------------------------
+
+For complete hardware details please refer to the manual/PDF that should have
+accompanied the board.
+
+4.2 Target Notes
+----------------
+
+NOTE: This BSP is only validated in the following environment, if used in a
+different environment it may run into unknown issues.
+
+H3SK:
+	Processor:             R8A7795 
+	CPU Revision:          rev 2.0
+	Board Revision:        H3SK, RTP0RC77951SKBX010SA00
+	BootLoader:            U-Boot
+	BootLoader Version:    U-Boot 2018.09 (Jun 20 2019 - 08:16:47 +0000)
+
+
+4.3 Specify boot medium
+-----------------------
+
+4.3.1 H3SK Board
+----------------
+
+1. Booting From QSPI Flash
+
+Detail SW setting as below:
+
+#Switch	D1   D2   D3   D4
+#SW6	ON   ON   OFF  ON
+
+#Switch	D1
+#SW1    ON
+
+JP1: 1-2 short
+
+2. Booting From Hyper Flash
+
+Detail SW setting as below:
+
+#Switch	D1   D2   D3   D4
+#SW6	ON   ON   ON   ON
+
+#Switch	D1
+#SW1    ON
