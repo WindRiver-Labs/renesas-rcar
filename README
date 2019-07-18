@@ -173,6 +173,9 @@ We can switch sound card dynamically with below command:
 	# pactl set-default-sink pcm3168a_output
 	# aplay record.wav
 
+Note: Audio feature is only available when setup project with wrlinux-std-sato distro
+that includes DISTRO_FEATURES "pulseaudio".
+
 5.2 CAN Bus
 -----------
 

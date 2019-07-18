@@ -1,0 +1,20 @@
+[Unit]
+Description=Sound Service
+SourcePath=/usr/bin/pulseaudio-service
+Before=multi-user.target
+After=watchdog.service
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+SuccessExitStatus=5 6
+ExecStart=/usr/bin/pulseaudio-service start
+ExecStop=/usr/bin/pulseaudio-service stop
+
+[Install]
+WantedBy=multi-user.target
