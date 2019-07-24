@@ -278,6 +278,51 @@ Execute the following commands to validate the WiFi cards:
 	# dhclient wlan0
 	# ping <AP address> -i wlan0 -c 5
 
+5.6 Bluetooth
+-------------
+
+There is a TI-WL18xx BT-WF modules on base-board(Kingfisher), customer could connect
+other BT device with renesas-rcar platform. Below 2 examples are able to be used to
+verify Bluetooth feature.
+
+5.6.1 Scan other BT devices
+---------------------------
+Run below commands to Scan other BT devices
+
+	# hciconfig hci0 up
+	# hcitool -i hci0 scan
+
+5.6.2 Play audio with Bluetooth
+-------------------------------
+Run below commands to play aduio from another device that connects with renesas-rcar platform by Bluetooth.
+
+	# bluetoothctl
+	Agent registered
+	[bluetooth]# power on
+	Changing power on succeeded
+	[bluetooth]# agent on
+	Agent is already registered
+	[bluetooth]# default-agent
+	Default agent request successful
+	[bluetooth]# scan on
+	Discovery started
+	..(snip)..  !!! <-- Please look for taget device !!!
+	[bluetooth]# scan off
+	..(snip)..
+	[bluetooth]# pair <MAC address of target device>
+	..(snip)..
+	Request confirmation
+	[agent] Confirm passkey 285311 (yes/no): yes
+	..(snip)..
+	Pairing successful
+	[bluetooth]# connect <MAC address of target device>
+	..(snip)..
+	Connection successful
+	..(snip)..
+	[Target device name]# quit
+
+Connect headset or speaker with CN32/CN33 on base-board(Kingfisher), and then play music on target device.
+
 
 6. kexec/kdump
 ==============

@@ -39,6 +39,7 @@ This BSP supports the following features.
 
   o Network
 	+ Ethernet: AVB 100/1000 MAC ethernet controller
+	+ Bluetooth: TI WL18XX BT-WF module
 
   o USB
 	+ USB Host: 1 OHCI/EHCI compatible host controller in the chip
