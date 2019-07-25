@@ -33,3 +33,5 @@ MULTILIBS ?= "multilib:lib32"
 DEFAULTTUNE_virtclass-multilib-lib32 ?= "armv7athf-neon"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "linux-yocto"
+
+NON_MULTILIB_RECIPES_append = " arm-trusted-firmware optee-os u-boot-renesas"
