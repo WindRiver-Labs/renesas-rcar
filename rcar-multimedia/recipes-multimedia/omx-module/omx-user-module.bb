@@ -11,10 +11,10 @@ DEPENDS = " \
 
 # Task Control. Compile is not performed when not installing OMX Video and Audio Libs.
 # Note) dummy-omx-user-module.inc does not exist.
-INCLUDE_FILE = '${@base_conditional("USE_OMX_COMMON", "1", "dummy", "deltask", d )}'
+INCLUDE_FILE = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "dummy", "deltask", d )}'
 include ${INCLUDE_FILE}-omx-user-module.inc
 
-DEPENDS += '${@base_conditional("USE_VIDEO_OMX", "1", "kernel-module-uvcs-drv", "", d )}'
+DEPENDS += '${@oe.utils.conditional("USE_VIDEO_OMX", "1", "kernel-module-uvcs-drv", "", d )}'
 
 inherit autotools
 
@@ -22,40 +22,40 @@ includedir = "${RENESAS_DATADIR}/include"
 CFLAGS += " -I${STAGING_DIR_HOST}${RENESAS_DATADIR}/include"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-OMX_EVA_PREFIX = '${@base_conditional("USE_OMX_EVA_PKG", "1", "EVA", "", d )}'
+OMX_EVA_PREFIX = '${@oe.utils.conditional("USE_OMX_EVA_PKG", "1", "EVA", "", d )}'
 
 # SRC file name
-SRC_URI_OMX = '${@base_conditional("USE_OMX_COMMON", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XCMCTL30SL41C.tar.bz2;unpack=0", "", d )}'
-SRC_URI_VCMND = '${@base_conditional("USE_VIDEO_DEC", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XVCMND30SL41C.tar.bz2;unpack=0", "", d )}'
-SRC_URI_VCMNE = '${@base_conditional("USE_VIDEO_ENC", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XVCMNE30SL41C.tar.bz2;unpack=0", "", d )}'
-SRC_URI_H264D = '${@base_conditional("USE_H264D_OMX", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XV264D30SL41C.tar.bz2", "", d )}'
-SRC_URI_H264E = '${@base_conditional("USE_H264E_OMX", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XV264E30SL41C.tar.bz2", "", d )}'
+SRC_URI_OMX = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XCMCTL30SL41C.tar.bz2;unpack=0", "", d )}'
+SRC_URI_VCMND = '${@oe.utils.conditional("USE_VIDEO_DEC", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XVCMND30SL41C.tar.bz2;unpack=0", "", d )}'
+SRC_URI_VCMNE = '${@oe.utils.conditional("USE_VIDEO_ENC", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XVCMNE30SL41C.tar.bz2;unpack=0", "", d )}'
+SRC_URI_H264D = '${@oe.utils.conditional("USE_H264D_OMX", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XV264D30SL41C.tar.bz2", "", d )}'
+SRC_URI_H264E = '${@oe.utils.conditional("USE_H264E_OMX", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XV264E30SL41C.tar.bz2", "", d )}'
 
-SRC_URI_H263D = '${@base_conditional("USE_H263D_OMX", "1", "file://RTM0AC0000XV263D30SL41C.tar.bz2", "", d )}'
-SRC_URI_H265D = '${@base_conditional("USE_H265D_OMX", "1", "file://RTM0AC0000XV265D30SL41C.tar.bz2", "", d )}'
-SRC_URI_MPEG2D = '${@base_conditional("USE_MPEG2D_OMX", "1", "file://RTM0AC0000XVM2VD30SL41C.tar.bz2", "", d )}'
-SRC_URI_MPEG4D = '${@base_conditional("USE_MPEG4D_OMX", "1", "file://RTM0AC0000XVM4VD30SL41C.tar.bz2", "", d )}'
-SRC_URI_VC1D = '${@base_conditional("USE_VC1D_OMX", "1", "file://RTM0AC0000XVVC1D30SL41C.tar.bz2", "", d )}'
-SRC_URI_DIVXD = '${@base_conditional("USE_DIVXD_OMX", "1", "file://RTM0AC0000XVDVXD30SL41C.tar.bz2", "", d )}'
-SRC_URI_RVD = '${@base_conditional("USE_RVD_OMX", "1", "file://RTM0AC0000XVRLVD30SL41C.tar.bz2", "", d )}'
-SRC_URI_VP8D = '${@base_conditional("USE_VP8D_OMX", "1", "file://RTM0AC0000XVVP8D30SL41C.tar.bz2", "", d )}'
-SRC_URI_VP8E = '${@base_conditional("USE_VP8E_OMX", "1", "file://RTM0AC0000XVVP8E30SL41C.tar.bz2", "", d )}'
-SRC_URI_VP9D = '${@base_conditional("USE_VP9D_OMX", "1", "file://RTM0AC0000XVVP9D30SL41C.tar.bz2", "", d )}'
-SRC_URI_ACMND = '${@base_conditional("USE_AUDIO_OMX", "1", "file://RTM0AC0000XACMND30SL41C.tar.gz", "", d )}'
-SRC_URI_AACLC = '${@base_conditional("USE_AACLCD_OMX", "1", "file://RTM0AC0000XAAACD30SL41C.tar.gz", "", d )}'
-SRC_URI_AACPV2 = '${@base_conditional("USE_AACPV2D_OMX", "1", "file://RTM0AC0000XAAAPD30SL41C.tar.gz", "", d )}'
-SRC_URI_MP3 = '${@base_conditional("USE_MP3D_OMX", "1", "file://RTM0AC0000XAMP3D30SL41C.tar.gz", "", d )}'
-SRC_URI_AACLCE = '${@base_conditional("USE_AACLCE_OMX", "1", "file://RTM0AC0000XAAACE30SL41C.tar.gz", "", d )}'
-SRC_URI_WMA = '${@base_conditional("USE_WMAD_OMX", "1", "file://RTM0AC0000XAWMAD30SL41C.tar.gz", "", d )}'
-SRC_URI_ALACD = '${@base_conditional("USE_ALACD_OMX", "1", "file://RTM0AC0000XAALAD30SL41C.tar.gz", "", d )}'
-SRC_URI_FLACD = '${@base_conditional("USE_FLACD_OMX", "1", "file://RTM0AC0000XAFLAD30SL41C.tar.gz", "", d )}'
-SRC_URI_DDD = '${@base_conditional("USE_DDD_OMX", "1", "file://RTM0AC0000XADD5D30SL41C.tar.gz", "", d )}'
-SRC_URI_AACMZ = '${@base_conditional("USE_AACLC_MDW", "1", "file://RTM0AC0000ADAACMZ1SL41C.tar.gz", "", d )}'
-SRC_URI_AACPV2MZ = '${@base_conditional("USE_AACPV2_MDW", "1", "file://RTM0AC0000ADAAPMZ1SL41C.tar.gz", "", d )}'
-SRC_URI_MP3MZ = '${@base_conditional("USE_MP3_MDW", "1", "file://RTM0AC0000ADMP3MZ1SL41C.tar.gz", "", d )}'
-SRC_URI_WMAMZ = '${@base_conditional("USE_WMA_MDW", "1", "file://RTM0AC0000ADWMAMZ1SL41C.tar.gz", "", d )}'
-SRC_URI_DDMZ = '${@base_conditional("USE_DD_MDW", "1", "file://RTM0AC0000ADDD5MZ1SL41C.tar.gz", "", d )}'
-SRC_URI_AEAACMZ = '${@base_conditional("USE_AACLCE_MDW", "1", "file://RTM0AC0000AEAACMZ1SL41C.tar.gz", "", d )}'
+SRC_URI_H263D = '${@oe.utils.conditional("USE_H263D_OMX", "1", "file://RTM0AC0000XV263D30SL41C.tar.bz2", "", d )}'
+SRC_URI_H265D = '${@oe.utils.conditional("USE_H265D_OMX", "1", "file://RTM0AC0000XV265D30SL41C.tar.bz2", "", d )}'
+SRC_URI_MPEG2D = '${@oe.utils.conditional("USE_MPEG2D_OMX", "1", "file://RTM0AC0000XVM2VD30SL41C.tar.bz2", "", d )}'
+SRC_URI_MPEG4D = '${@oe.utils.conditional("USE_MPEG4D_OMX", "1", "file://RTM0AC0000XVM4VD30SL41C.tar.bz2", "", d )}'
+SRC_URI_VC1D = '${@oe.utils.conditional("USE_VC1D_OMX", "1", "file://RTM0AC0000XVVC1D30SL41C.tar.bz2", "", d )}'
+SRC_URI_DIVXD = '${@oe.utils.conditional("USE_DIVXD_OMX", "1", "file://RTM0AC0000XVDVXD30SL41C.tar.bz2", "", d )}'
+SRC_URI_RVD = '${@oe.utils.conditional("USE_RVD_OMX", "1", "file://RTM0AC0000XVRLVD30SL41C.tar.bz2", "", d )}'
+SRC_URI_VP8D = '${@oe.utils.conditional("USE_VP8D_OMX", "1", "file://RTM0AC0000XVVP8D30SL41C.tar.bz2", "", d )}'
+SRC_URI_VP8E = '${@oe.utils.conditional("USE_VP8E_OMX", "1", "file://RTM0AC0000XVVP8E30SL41C.tar.bz2", "", d )}'
+SRC_URI_VP9D = '${@oe.utils.conditional("USE_VP9D_OMX", "1", "file://RTM0AC0000XVVP9D30SL41C.tar.bz2", "", d )}'
+SRC_URI_ACMND = '${@oe.utils.conditional("USE_AUDIO_OMX", "1", "file://RTM0AC0000XACMND30SL41C.tar.gz", "", d )}'
+SRC_URI_AACLC = '${@oe.utils.conditional("USE_AACLCD_OMX", "1", "file://RTM0AC0000XAAACD30SL41C.tar.gz", "", d )}'
+SRC_URI_AACPV2 = '${@oe.utils.conditional("USE_AACPV2D_OMX", "1", "file://RTM0AC0000XAAAPD30SL41C.tar.gz", "", d )}'
+SRC_URI_MP3 = '${@oe.utils.conditional("USE_MP3D_OMX", "1", "file://RTM0AC0000XAMP3D30SL41C.tar.gz", "", d )}'
+SRC_URI_AACLCE = '${@oe.utils.conditional("USE_AACLCE_OMX", "1", "file://RTM0AC0000XAAACE30SL41C.tar.gz", "", d )}'
+SRC_URI_WMA = '${@oe.utils.conditional("USE_WMAD_OMX", "1", "file://RTM0AC0000XAWMAD30SL41C.tar.gz", "", d )}'
+SRC_URI_ALACD = '${@oe.utils.conditional("USE_ALACD_OMX", "1", "file://RTM0AC0000XAALAD30SL41C.tar.gz", "", d )}'
+SRC_URI_FLACD = '${@oe.utils.conditional("USE_FLACD_OMX", "1", "file://RTM0AC0000XAFLAD30SL41C.tar.gz", "", d )}'
+SRC_URI_DDD = '${@oe.utils.conditional("USE_DDD_OMX", "1", "file://RTM0AC0000XADD5D30SL41C.tar.gz", "", d )}'
+SRC_URI_AACMZ = '${@oe.utils.conditional("USE_AACLC_MDW", "1", "file://RTM0AC0000ADAACMZ1SL41C.tar.gz", "", d )}'
+SRC_URI_AACPV2MZ = '${@oe.utils.conditional("USE_AACPV2_MDW", "1", "file://RTM0AC0000ADAAPMZ1SL41C.tar.gz", "", d )}'
+SRC_URI_MP3MZ = '${@oe.utils.conditional("USE_MP3_MDW", "1", "file://RTM0AC0000ADMP3MZ1SL41C.tar.gz", "", d )}'
+SRC_URI_WMAMZ = '${@oe.utils.conditional("USE_WMA_MDW", "1", "file://RTM0AC0000ADWMAMZ1SL41C.tar.gz", "", d )}'
+SRC_URI_DDMZ = '${@oe.utils.conditional("USE_DD_MDW", "1", "file://RTM0AC0000ADDD5MZ1SL41C.tar.gz", "", d )}'
+SRC_URI_AEAACMZ = '${@oe.utils.conditional("USE_AACLCE_MDW", "1", "file://RTM0AC0000AEAACMZ1SL41C.tar.gz", "", d )}'
 
 SRC_URI = " \
     ${SRC_URI_OMX} \
@@ -91,23 +91,23 @@ SRC_URI = " \
 "
 
 # SRC directory name
-OMX_COMMON_SRC = '${@base_conditional("USE_OMX_COMMON", "1", "${OMX_EVA_PREFIX}RTM0AC0000XCMCTL30SL41C", "", d )}'
-OMX_VIDEO_DEC_COMMON_SRC = '${@base_conditional("USE_VIDEO_DEC", "1", "${OMX_EVA_PREFIX}RTM0AC0000XVCMND30SL41C", "", d )}'
-OMX_VIDEO_ENC_COMMON_SRC = '${@base_conditional("USE_VIDEO_ENC", "1", "${OMX_EVA_PREFIX}RTM0AC0000XVCMNE30SL41C", "", d )}'
+OMX_COMMON_SRC = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "${OMX_EVA_PREFIX}RTM0AC0000XCMCTL30SL41C", "", d )}'
+OMX_VIDEO_DEC_COMMON_SRC = '${@oe.utils.conditional("USE_VIDEO_DEC", "1", "${OMX_EVA_PREFIX}RTM0AC0000XVCMND30SL41C", "", d )}'
+OMX_VIDEO_ENC_COMMON_SRC = '${@oe.utils.conditional("USE_VIDEO_ENC", "1", "${OMX_EVA_PREFIX}RTM0AC0000XVCMNE30SL41C", "", d )}'
 
-OMX_H264_DEC_SRC = '${@base_conditional("USE_H264D_OMX", "1", "${OMX_EVA_PREFIX}RTM0AC0000XV264D30SL41C", "", d )}'
-OMX_H264_ENC_SRC = '${@base_conditional("USE_H264E_OMX", "1", "${OMX_EVA_PREFIX}RTM0AC0000XV264E30SL41C", "", d )}'
+OMX_H264_DEC_SRC = '${@oe.utils.conditional("USE_H264D_OMX", "1", "${OMX_EVA_PREFIX}RTM0AC0000XV264D30SL41C", "", d )}'
+OMX_H264_ENC_SRC = '${@oe.utils.conditional("USE_H264E_OMX", "1", "${OMX_EVA_PREFIX}RTM0AC0000XV264E30SL41C", "", d )}'
 
-OMX_H263_DEC_SRC = '${@base_conditional("USE_H263D_OMX", "1", "RTM0AC0000XV263D30SL41C", "", d )}'
-OMX_H265_DEC_SRC = '${@base_conditional("USE_H265D_OMX", "1", "RTM0AC0000XV265D30SL41C", "", d )}'
-OMX_MPEG2_DEC_SRC = '${@base_conditional("USE_MPEG2D_OMX", "1", "RTM0AC0000XVM2VD30SL41C", "", d )}'
-OMX_MPEG4_DEC_SRC = '${@base_conditional("USE_MPEG4D_OMX", "1", "RTM0AC0000XVM4VD30SL41C", "", d )}'
-OMX_VC1_DEC_SRC = '${@base_conditional("USE_VC1D_OMX", "1", "RTM0AC0000XVVC1D30SL41C", "", d )}'
-OMX_DIVX_DEC_SRC = '${@base_conditional("USE_DIVXD_OMX", "1", "RTM0AC0000XVDVXD30SL41C", "", d )}'
-OMX_RV_DEC_SRC = '${@base_conditional("USE_RVD_OMX", "1", "RTM0AC0000XVRLVD30SL41C", "", d )}'
-OMX_VP8_DEC_SRC = '${@base_conditional("USE_VP8D_OMX", "1", "RTM0AC0000XVVP8D30SL41C", "", d )}'
-OMX_VP8_ENC_SRC = '${@base_conditional("USE_VP8E_OMX", "1", "RTM0AC0000XVVP8E30SL41C", "", d )}'
-OMX_VP9_DEC_SRC = '${@base_conditional("USE_VP9D_OMX", "1", "RTM0AC0000XVVP9D30SL41C", "", d )}'
+OMX_H263_DEC_SRC = '${@oe.utils.conditional("USE_H263D_OMX", "1", "RTM0AC0000XV263D30SL41C", "", d )}'
+OMX_H265_DEC_SRC = '${@oe.utils.conditional("USE_H265D_OMX", "1", "RTM0AC0000XV265D30SL41C", "", d )}'
+OMX_MPEG2_DEC_SRC = '${@oe.utils.conditional("USE_MPEG2D_OMX", "1", "RTM0AC0000XVM2VD30SL41C", "", d )}'
+OMX_MPEG4_DEC_SRC = '${@oe.utils.conditional("USE_MPEG4D_OMX", "1", "RTM0AC0000XVM4VD30SL41C", "", d )}'
+OMX_VC1_DEC_SRC = '${@oe.utils.conditional("USE_VC1D_OMX", "1", "RTM0AC0000XVVC1D30SL41C", "", d )}'
+OMX_DIVX_DEC_SRC = '${@oe.utils.conditional("USE_DIVXD_OMX", "1", "RTM0AC0000XVDVXD30SL41C", "", d )}'
+OMX_RV_DEC_SRC = '${@oe.utils.conditional("USE_RVD_OMX", "1", "RTM0AC0000XVRLVD30SL41C", "", d )}'
+OMX_VP8_DEC_SRC = '${@oe.utils.conditional("USE_VP8D_OMX", "1", "RTM0AC0000XVVP8D30SL41C", "", d )}'
+OMX_VP8_ENC_SRC = '${@oe.utils.conditional("USE_VP8E_OMX", "1", "RTM0AC0000XVVP8E30SL41C", "", d )}'
+OMX_VP9_DEC_SRC = '${@oe.utils.conditional("USE_VP9D_OMX", "1", "RTM0AC0000XVVP9D30SL41C", "", d )}'
 
 OMX_VIDEO_SRC_LIST = " \
     ${OMX_COMMON_SRC} \
@@ -134,15 +134,15 @@ WMA_MIDDLEWARE_SRC = "RTM0AC0000ADWMAMZ1SL41C"
 DD_MIDDLEWARE_SRC = "RTM0AC0000ADDD5MZ1SL41C"
 AEAAC_MIDDLEWARE_SRC = "RTM0AC0000AEAACMZ1SL41C"
 
-OMX_AUDIO_COMMON_SRC = '${@base_conditional("USE_AUDIO_OMX", "1", "RTM0AC0000XACMND30SL41C", "", d )}'
-OMX_AACLC_DEC_SRC = '${@base_conditional("USE_AACLCD_OMX", "1", "RTM0AC0000XAAACD30SL41C", "", d )}'
-OMX_AACPV2_DEC_SRC = '${@base_conditional("USE_AACPV2D_OMX", "1", "RTM0AC0000XAAAPD30SL41C", "", d )}'
-OMX_MP3_DEC_SRC = '${@base_conditional("USE_MP3D_OMX", "1", "RTM0AC0000XAMP3D30SL41C", "", d )}'
-OMX_WMA_DEC_SRC = '${@base_conditional("USE_WMAD_OMX", "1", "RTM0AC0000XAWMAD30SL41C", "", d )}'
-OMX_ALAC_DEC_SRC = '${@base_conditional("USE_ALACD_OMX", "1", "RTM0AC0000XAALAD30SL41C", "", d )}'
-OMX_FLAC_DEC_SRC = '${@base_conditional("USE_FLACD_OMX", "1", "RTM0AC0000XAFLAD30SL41C", "", d )}'
-OMX_DD_DEC_SRC = '${@base_conditional("USE_DDD_OMX", "1", "RTM0AC0000XADD5D30SL41C", "", d )}'
-OMX_AACLC_ENC_SRC = '${@base_conditional("USE_AACLCE_OMX", "1", "RTM0AC0000XAAACE30SL41C", "", d )}'
+OMX_AUDIO_COMMON_SRC = '${@oe.utils.conditional("USE_AUDIO_OMX", "1", "RTM0AC0000XACMND30SL41C", "", d )}'
+OMX_AACLC_DEC_SRC = '${@oe.utils.conditional("USE_AACLCD_OMX", "1", "RTM0AC0000XAAACD30SL41C", "", d )}'
+OMX_AACPV2_DEC_SRC = '${@oe.utils.conditional("USE_AACPV2D_OMX", "1", "RTM0AC0000XAAAPD30SL41C", "", d )}'
+OMX_MP3_DEC_SRC = '${@oe.utils.conditional("USE_MP3D_OMX", "1", "RTM0AC0000XAMP3D30SL41C", "", d )}'
+OMX_WMA_DEC_SRC = '${@oe.utils.conditional("USE_WMAD_OMX", "1", "RTM0AC0000XAWMAD30SL41C", "", d )}'
+OMX_ALAC_DEC_SRC = '${@oe.utils.conditional("USE_ALACD_OMX", "1", "RTM0AC0000XAALAD30SL41C", "", d )}'
+OMX_FLAC_DEC_SRC = '${@oe.utils.conditional("USE_FLACD_OMX", "1", "RTM0AC0000XAFLAD30SL41C", "", d )}'
+OMX_DD_DEC_SRC = '${@oe.utils.conditional("USE_DDD_OMX", "1", "RTM0AC0000XADD5D30SL41C", "", d )}'
+OMX_AACLC_ENC_SRC = '${@oe.utils.conditional("USE_AACLCE_OMX", "1", "RTM0AC0000XAAACE30SL41C", "", d )}'
 
 OMX_AUDIO_SRC_LIST = " \
     ${OMX_AUDIO_COMMON_SRC} \
@@ -192,7 +192,7 @@ do_install_omx_video() {
     for omxmc in ${OMX_VIDEO_SRC_LIST}
     do
         src="${WORKDIR}/${omxmc}"
-        install -m 755 ${src}/${baselib}/lib*.so.* ${D}/${libdir}
+        install -m 755 ${src}/lib/lib*.so.* ${D}/${libdir}
         install -m 644 ${src}/include/*.h ${D}/${includedir}
         install -m 644 ${src}/config/*.txt ${D}/${sysconfdir}/omxr
     done
@@ -327,7 +327,7 @@ do_install_audio_middleware() {
     cd ${D}/${libdir}
 
     if [ "X${USE_AACLC_MDW}" = "X1" ]; then
-        install -m 755 ${WORKDIR}/${AAC_MIDDLEWARE_SRC}/${baselib}/libAACDLA_L.so.3.0 \
+        install -m 755 ${WORKDIR}/${AAC_MIDDLEWARE_SRC}/lib/libAACDLA_L.so.3.0 \
             ${D}/${libdir}
         install -m 644 ${WORKDIR}/${AAC_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
 
@@ -336,7 +336,7 @@ do_install_audio_middleware() {
     fi
 
     if [ "X${USE_AACPV2_MDW}" = "X1" ]; then
-        install -m 755 ${WORKDIR}/${AACPV2_MIDDLEWARE_SRC}/${baselib}/libRSACPDLA_L.so.2.0 \
+        install -m 755 ${WORKDIR}/${AACPV2_MIDDLEWARE_SRC}/lib/libRSACPDLA_L.so.2.0 \
             ${D}/${libdir}
         install -m 644 ${WORKDIR}/${AACPV2_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
 
@@ -345,7 +345,7 @@ do_install_audio_middleware() {
     fi
 
     if [ "X${USE_MP3_MDW}" = "X1" ]; then
-        install -m 755 ${WORKDIR}/${MP3_MIDDLEWARE_SRC}/${baselib}/libMP3DLA_L.so.2.0 \
+        install -m 755 ${WORKDIR}/${MP3_MIDDLEWARE_SRC}/lib/libMP3DLA_L.so.2.0 \
             ${D}/${libdir}
         install -m 644 ${WORKDIR}/${MP3_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
 
@@ -354,7 +354,7 @@ do_install_audio_middleware() {
     fi
 
     if [ "X${USE_WMA_MDW}" = "X1" ]; then
-        install -m 755 ${WORKDIR}/${WMA_MIDDLEWARE_SRC}/${baselib}/libWMASTDLA_L.so.2.0 \
+        install -m 755 ${WORKDIR}/${WMA_MIDDLEWARE_SRC}/lib/libWMASTDLA_L.so.2.0 \
             ${D}/${libdir}
         install -m 644 ${WORKDIR}/${WMA_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
 
@@ -363,7 +363,7 @@ do_install_audio_middleware() {
     fi
 
     if [ "X${USE_DD_MDW}" = "X1" ]; then
-        install -m 755 ${WORKDIR}/${DD_MIDDLEWARE_SRC}/${baselib}/libRSDACDLA_L.so.2.0 \
+        install -m 755 ${WORKDIR}/${DD_MIDDLEWARE_SRC}/lib/libRSDACDLA_L.so.2.0 \
             ${D}/${libdir}
         install -m 644 ${WORKDIR}/${DD_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
 
@@ -372,7 +372,7 @@ do_install_audio_middleware() {
     fi
 
     if [ "X${USE_AACLCE_MDW}" = "X1" ]; then
-        install -m 755 ${WORKDIR}/${AEAAC_MIDDLEWARE_SRC}/${baselib}/libRSAACELA_L.so.3.0 \
+        install -m 755 ${WORKDIR}/${AEAAC_MIDDLEWARE_SRC}/lib/libRSAACELA_L.so.3.0 \
             ${D}/${libdir}
         install -m 644 ${WORKDIR}/${AEAAC_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
 
@@ -386,7 +386,7 @@ do_install_omx_audio() {
     for omxmc in ${OMX_AUDIO_SRC_LIST}
     do
         src="${WORKDIR}/${omxmc}/"
-        install -m 755 ${src}/${baselib}/lib*.so.* ${D}/${libdir}
+        install -m 755 ${src}/lib/lib*.so.* ${D}/${libdir}
         if [ -d ${src}/include ]; then
             install -m 644 ${src}/include/*.h ${D}/${includedir}
         fi
@@ -477,8 +477,8 @@ FILES_${PN}-dev = " \
 "
 
 RDEPENDS_${PN} += "mmngr-user-module vspmif-user-module"
-RDEPENDS_${PN} += '${@base_conditional("USE_ALACD_OMX", "1", "libalacdla-l", "", d )}'
-RDEPENDS_${PN} += '${@base_conditional("USE_FLACD_OMX", "1", "libflacdla-l", "", d )}'
+RDEPENDS_${PN} += '${@oe.utils.conditional("USE_ALACD_OMX", "1", "libalacdla-l", "", d )}'
+RDEPENDS_${PN} += '${@oe.utils.conditional("USE_FLACD_OMX", "1", "libflacdla-l", "", d )}'
 
 # Skip debug strip of do_populate_sysroot()
 INHIBIT_SYSROOT_STRIP = "1"

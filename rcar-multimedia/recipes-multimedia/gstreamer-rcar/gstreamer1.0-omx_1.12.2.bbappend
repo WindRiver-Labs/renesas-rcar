@@ -27,6 +27,7 @@ do_configure_prepend() {
     export https_proxy=${https_proxy}
     export HTTP_PROXY=${HTTP_PROXY}
     export HTTPS_PROXY=${HTTPS_PROXY}
+    export GIT_SSL_NO_VERIFY=true
     cd ${S}
     install -m 0644 ${WORKDIR}/gstomx.conf ${S}/config/rcar/
     sed -i 's,@RENESAS_DATADIR@,${RENESAS_DATADIR},g' ${S}/config/rcar/gstomx.conf

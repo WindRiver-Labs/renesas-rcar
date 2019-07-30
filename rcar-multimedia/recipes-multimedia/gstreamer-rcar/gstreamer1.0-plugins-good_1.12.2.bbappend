@@ -20,6 +20,7 @@ do_init_submodule() {
     export https_proxy=${https_proxy}
     export HTTP_PROXY=${HTTP_PROXY}
     export HTTPS_PROXY=${HTTPS_PROXY}
+    export GIT_SSL_NO_VERIFY=true
     cd ${S}
     git submodule init
     git submodule update
