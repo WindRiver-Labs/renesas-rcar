@@ -11,7 +11,7 @@ KERNEL_IMAGETYPES = "Image.gz Image"
 
 SERIAL_CONSOLE = "115200 ttySC0"
 
-MACHINEOVERRIDES .= ":ulcb:m3ulcb"
+MACHINEOVERRIDES .= ":ulcb"
 
 # Configuration for ARM Trusted Firmware
 EXTRA_IMAGEDEPENDS += " arm-trusted-firmware optee-os"
