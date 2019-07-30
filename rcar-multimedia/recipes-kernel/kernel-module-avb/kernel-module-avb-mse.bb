@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = " \
 
 inherit module distro_features_check
 
-DEPENDS = "linux-renesas kernel-module-avb-streaming kernel-module-avb-mch"
+DEPENDS = "linux-yocto kernel-module-avb-streaming kernel-module-avb-mch"
 
 REQUIRED_DISTRO_FEATURES = "avb"
 

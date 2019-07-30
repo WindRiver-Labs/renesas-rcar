@@ -10,7 +10,7 @@ require include/rcar-gen3-modules-common.inc
 
 inherit module
 
-DEPENDS = "linux-renesas kernel-module-vspm"
+DEPENDS = "linux-yocto kernel-module-vspm"
 PN = "kernel-module-vsp2driver"
 PR = "r0"
 

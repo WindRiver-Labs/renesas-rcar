@@ -16,7 +16,8 @@ require include/rcar-gen3-path-common.inc
 inherit module
 PR = "r0"
 
-SRC_URI = "${@base_conditional('USE_VIDEO_OMX', '1', 'file://RCG3VUDRL4101ZDO.tar.bz2', '', d)}"
+SRC_URI = "${@oe.utils.conditional('USE_VIDEO_OMX', '1', 'file://RCG3VUDRL4101ZDO.tar.bz2', '', d)}"
+SRC_URI_append = " file://0001-uvcs-drv-use-latest-timer-list-API-interface.patch"
 
 S = "${WORKDIR}/RCG3VUDRL4101ZDO"
 

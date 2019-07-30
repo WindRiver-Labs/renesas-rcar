@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = " \
 
 inherit module distro_features_check
 
-DEPENDS = "linux-renesas"
+DEPENDS = "linux-yocto"
 PN = "kernel-module-tddmac"
 PR = "r0"
 

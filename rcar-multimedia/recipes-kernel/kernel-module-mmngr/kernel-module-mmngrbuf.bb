@@ -2,7 +2,7 @@ DESCRIPTION = "Memory Manager Buffer Kernel module for Renesas R-Car Gen3"
 
 require mmngr_drv.inc
 
-DEPENDS = "linux-renesas"
+DEPENDS = "linux-yocto"
 PN = "kernel-module-mmngrbuf"
 PR = "r0"
 

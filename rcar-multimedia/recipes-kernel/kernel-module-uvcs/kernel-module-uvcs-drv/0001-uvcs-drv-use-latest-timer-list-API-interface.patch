@@ -1,0 +1,138 @@
+From e249c49d717180e1f882a3000ac5fa2cbc9ec261 Mon Sep 17 00:00:00 2001
+From: Limeng <Meng.Li@windriver.com>
+Date: Wed, 17 Jul 2019 13:15:40 +0800
+Subject: [PATCH] uvcs-drv: use latest timer list API interface
+
+In kernel 4.18, there are some adjustments about timer list
+API interface. Especially the timer initialization operation.
+init_timer() is removed, instead it with new interface timer_setup().
+Another important changing is that from_timer() is used to get the
+structure instance that contains the timer list, no longer to use
+pointer to pass the private data.
+
+Therefore, modify code to use the new timer list interface
+so that build successfully.
+
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+---
+ src/lkm/uvcs_lkm_internal.h |  1 +
+ src/lkm/uvcs_lkm_uf_io.c    | 46 +++++++++++++++++++++++----------------------
+ 2 files changed, 25 insertions(+), 22 deletions(-)
+
+diff --git a/src/lkm/uvcs_lkm_internal.h b/src/lkm/uvcs_lkm_internal.h
+index d3f3249..cba8849 100644
+--- a/src/lkm/uvcs_lkm_internal.h
++++ b/src/lkm/uvcs_lkm_internal.h
+@@ -168,6 +168,7 @@ struct uvcs_vcp_hwinf {
+ 	struct timer_list       timer_ce;
+ 	spinlock_t              slock_vlc;
+ 	spinlock_t              slock_ce;
++	UVCS_U32		hw_ip_id;
+ };
+ 
+ struct uvcs_fcp_hwinf {
+diff --git a/src/lkm/uvcs_lkm_uf_io.c b/src/lkm/uvcs_lkm_uf_io.c
+index 34bdb16..f548ad0 100644
+--- a/src/lkm/uvcs_lkm_uf_io.c
++++ b/src/lkm/uvcs_lkm_uf_io.c
+@@ -144,8 +144,8 @@ static const struct soc_device_attribute device_es2x[] = {
+ /******************************************************************************/
+ static irqreturn_t uvcs_vlc_int_handler(int irq, void *dev);
+ static irqreturn_t uvcs_ce_int_handler(int irq, void *dev);
+-static void uvcs_vlc_timer_handler(unsigned long data);
+-static void uvcs_ce_timer_handler(unsigned long data);
++static void uvcs_vlc_timer_handler(struct timer_list *t);
++static void uvcs_ce_timer_handler(struct timer_list *t);
+ 
+ static int uvcs_vcp_request_irq(struct platform_device *pdev);
+ static void uvcs_vcp_free_irq(struct platform_device *pdev);
+@@ -230,20 +230,22 @@ static irqreturn_t uvcs_ce_int_handler(
+  * \brief Timer handler for VLC module (timeout VCP processing)
+  */
+ static void uvcs_vlc_timer_handler(
+-	unsigned long data /**< [in] hardware identifier */
++	struct timer_list *t /**< [in] hardware identifier */
+ 	)
+ {
++	struct uvcs_vcp_hwinf *hwinf = from_timer(hwinf, t, timer_vlc);
++
+ 	if (driver_info) {
+ 		struct timespec ts;
+ 		unsigned long flags;
+ 
+ 		getrawmonotonic(&ts);
+-		if (data < driver_info->vcp_devnum) {
+-			spin_lock_irqsave(&driver_info->vcpinf[data].slock_vlc, flags);
+-			del_timer(&driver_info->vcpinf[data].timer_vlc);
+-			iowrite32(0u, driver_info->vcpinf[data].reg_vlc + UVCS_VCPREG_IRQENB);
+-			uvcs_cmn_vlc_interrupt(driver_info->uvcs_info, data, ts.tv_nsec, UVCS_TRUE);
+-			spin_unlock_irqrestore(&driver_info->vcpinf[data].slock_vlc, flags);
++		if (hwinf->hw_ip_id < driver_info->vcp_devnum) {
++			spin_lock_irqsave(&driver_info->vcpinf[hwinf->hw_ip_id].slock_vlc, flags);
++			del_timer(&driver_info->vcpinf[hwinf->hw_ip_id].timer_vlc);
++			iowrite32(0u, driver_info->vcpinf[hwinf->hw_ip_id].reg_vlc + UVCS_VCPREG_IRQENB);
++			uvcs_cmn_vlc_interrupt(driver_info->uvcs_info, hwinf->hw_ip_id, ts.tv_nsec, UVCS_TRUE);
++			spin_unlock_irqrestore(&driver_info->vcpinf[hwinf->hw_ip_id].slock_vlc, flags);
+ 		}
+ 	}
+ }
+@@ -252,20 +254,22 @@ static void uvcs_vlc_timer_handler(
+  * \brief Timer handler for CE module (timeout VCP processing)
+  */
+ static void uvcs_ce_timer_handler(
+-	unsigned long data /**< [in] hardware identifier */
++	struct timer_list *t /**< [in] hardware identifier */
+ 	)
+ {
++	struct uvcs_vcp_hwinf *hwinf = from_timer(hwinf, t, timer_ce);
++
+ 	if (driver_info) {
+ 		struct timespec ts;
+ 		unsigned long flags;
+ 
+ 		getrawmonotonic(&ts);
+-		if (data < driver_info->vcp_devnum) {
+-			spin_lock_irqsave(&driver_info->vcpinf[data].slock_ce, flags);
+-			del_timer(&driver_info->vcpinf[data].timer_ce);
+-			iowrite32(0u, driver_info->vcpinf[data].reg_ce + UVCS_VCPREG_IRQENB);
+-			uvcs_cmn_ce_interrupt(driver_info->uvcs_info, data, ts.tv_nsec, UVCS_TRUE);
+-			spin_unlock_irqrestore(&driver_info->vcpinf[data].slock_ce, flags);
++		if (hwinf->hw_ip_id < driver_info->vcp_devnum) {
++			spin_lock_irqsave(&driver_info->vcpinf[hwinf->hw_ip_id].slock_ce, flags);
++			del_timer(&driver_info->vcpinf[hwinf->hw_ip_id].timer_ce);
++			iowrite32(0u, driver_info->vcpinf[hwinf->hw_ip_id].reg_ce + UVCS_VCPREG_IRQENB);
++			uvcs_cmn_ce_interrupt(driver_info->uvcs_info, hwinf->hw_ip_id, ts.tv_nsec, UVCS_TRUE);
++			spin_unlock_irqrestore(&driver_info->vcpinf[hwinf->hw_ip_id].slock_ce, flags);
+ 		}
+ 	}
+ }
+@@ -326,13 +330,11 @@ static void uvcs_hw_start(
+ 		/* set kernel timer */
+ 		if (hw_module_id == UVCS_CMN_BASE_ADDR_VLC) {
+ 			drv->vcpinf[hw_ip_id].timer_vlc.expires = jiffies + UVCS_TIMEOUT_TIMER;
+-			drv->vcpinf[hw_ip_id].timer_vlc.data = hw_ip_id;
+-			drv->vcpinf[hw_ip_id].timer_vlc.function = &uvcs_vlc_timer_handler;
++			drv->vcpinf[hw_ip_id].hw_ip_id = hw_ip_id;
+ 			add_timer(&drv->vcpinf[hw_ip_id].timer_vlc);
+ 		} else {
+ 			drv->vcpinf[hw_ip_id].timer_ce.expires = jiffies + UVCS_TIMEOUT_TIMER;
+-			drv->vcpinf[hw_ip_id].timer_ce.data = hw_ip_id;
+-			drv->vcpinf[hw_ip_id].timer_ce.function = &uvcs_ce_timer_handler;
++			drv->vcpinf[hw_ip_id].hw_ip_id = hw_ip_id;
+ 			add_timer(&drv->vcpinf[hw_ip_id].timer_ce);
+ 		}
+ 	}
+@@ -736,8 +738,8 @@ static int uvcs_vcp_request_irq(
+ 		goto err_exit_2;
+ 	}
+ 
+-	init_timer(&vcpinf->timer_vlc);
+-	init_timer(&vcpinf->timer_ce);
++	timer_setup(&vcpinf->timer_vlc, uvcs_vlc_timer_handler, 0);
++	timer_setup(&vcpinf->timer_ce, uvcs_ce_timer_handler, 0);
+ 	spin_lock_init(&vcpinf->slock_vlc);
+ 	spin_lock_init(&vcpinf->slock_ce);
+ 	vcpinf->irq_enable = true;
+-- 
+2.14.4
+

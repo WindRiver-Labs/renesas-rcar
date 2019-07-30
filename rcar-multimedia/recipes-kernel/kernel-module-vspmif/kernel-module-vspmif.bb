@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = " \
 
 inherit module
 
-DEPENDS = "linux-renesas kernel-module-vspm"
+DEPENDS = "linux-yocto kernel-module-vspm"
 PN = "kernel-module-vspmif"
 PR = "r0"
 
