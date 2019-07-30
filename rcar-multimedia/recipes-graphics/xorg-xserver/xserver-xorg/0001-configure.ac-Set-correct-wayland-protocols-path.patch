@@ -1,0 +1,40 @@
+From 8e656daf7807a4481f1ab258debe4fa7c67a2539 Mon Sep 17 00:00:00 2001
+From: Limeng <Meng.Li@windriver.com>
+Date: Sat, 27 Jul 2019 01:13:43 +0000
+Subject: [PATCH] configure.ac: Set correct wayland-protocols path
+
+The wayland-protocols directory is used during build: Fix the path
+to point to sysroot specified in recipe.
+
+In cross environment we have to prepend the sysroot to the path found by
+pkgconfig since the path returned from pkgconfig does not have sysroot prefixed
+it ends up using the files from host system. If build host has wayland installed
+the build will succeed but if you dont have wayland-protocols installed on build
+host then it wont find the files on build host
+
+This should work ok with non sysrooted builds too since
+in those cases PKG_CONFIG_SYSROOT_DIR will be empty
+
+This fixing refer to patch in gstream package.
+
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7694d80..1d6b39f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2423,7 +2423,7 @@ if test "x$XWAYLAND" = xyes; then
+                           AC_SUBST(SCANNER_ARG, 'private-code'),
+                           AC_SUBST(SCANNER_ARG, 'code'))
+ 
+-	AC_SUBST(WAYLAND_PROTOCOLS_DATADIR, `$PKG_CONFIG --variable=pkgdatadir wayland-protocols`)
++	AC_SUBST(WAYLAND_PROTOCOLS_DATADIR, ${WAYLAND_PROTOCOLS_SYSROOT_DIR}`$PKG_CONFIG --variable=pkgdatadir wayland-protocols`)
+ fi
+ AM_CONDITIONAL(XWAYLAND_EGLSTREAM, [test "x$XWAYLAND_EGLSTREAM" = "xyes"])
+ 
+-- 
+2.18.1
+

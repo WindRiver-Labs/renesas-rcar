@@ -2,6 +2,8 @@
 PACKAGECONFIG[gles] = "--enable-gles1 --disable-gles2"
 PACKAGECONFIG[egl] = "--enable-egl --with-egl-platforms=wayland"
 
+PROVIDES_remove += "virtual/egl virtual/libgles2"
+
 # Disable the gbm modules of mesa
 PACKAGECONFIG_remove = "gbm"
 

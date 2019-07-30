@@ -16,12 +16,13 @@ SRC_URI_append = " \
     file://weston.ini \
     file://weston_v4l2.ini \
     file://weston.sh \
+    file://configure.ac-use-AC_HEADER_MAJOR-to-detect-major-minor.patch \
 "
 
 S = "${WORKDIR}/git"
 
 PACKAGECONFIG_append = " \
-    ${@base_conditional('USE_MULTIMEDIA', '1', ' v4l2', '', d)} \
+    ${@oe.utils.conditional('USE_MULTIMEDIA', '1', ' v4l2', '', d)} \
 "
 PACKAGECONFIG[v4l2] = " --enable-v4l2, --disable-v4l2,,kernel-module-vsp2driver"
 
