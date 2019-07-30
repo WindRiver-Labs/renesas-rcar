@@ -469,3 +469,113 @@ If a full 32-bit filesystem is necessary, use the prefix "lib32-" before
 the expected target image as follows:
 
 	# bitbake lib32-wrlinux-image-glibc-std
+
+
+9. Multimedia Layer
+===================
+
+This layer includes recipes of graphic and multimedia feature.
+If customer wants to enable GPU hardware accelerator, please add this
+layer before building image. With this layer, customer can get a
+image with weston desktop based on wayland protocol.
+
+Next sections show how to use the multimedia layer.
+
+9.1 Setup project with weston template
+--------------------------------------
+
+The GPU hardware accelerating library is based on wayland protocol, and
+it is need to use weston as the desktop. So setup project with with weston template.
+Detail command as below:
+
+	# <path-of-wrlinux-x>/setup.sh --machine renesas-rcar-h3 --distro wrlinux-std-sato --dl-layers --all-layers --accept-eula=yes --templates feature/weston-demo
+
+Note: The distro should be wrlinux-std-sato.
+
+9.2 Download Library and kernel module
+--------------------------------------
+
+Download below package with link https://www.renesas.com/us/en/software/D6003784.html
+R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-20190507.zip
+This package includes graphic and multimedia libraries.
+
+Download below package with link https://www.renesas.com/us/en/software/D6003785.html
+R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-20190507.zip
+This package include related kernel driver modules.
+
+
+9.3 Deploy Library and kernel module
+------------------------------------
+
+Put above 2 packages into <path-of-bsplayer>/rcar-multimedia/multimedia-graphics-library,
+and then use script copy_library_softwares.sh to deploy them. Detail commands as below:
+
+	# export PKGS_DIR=<path-of-bsplayer>/rcar-multimedia/multimedia-graphics-library
+	# cd <path-of-bsplayer>/rcar-multimedia/
+	# sh script/copy_library_softwares.sh -f $PKGS_DIR
+	# unset PKGS_DIR
+
+
+9.4 Add Multimedia Layer
+------------------------
+
+Run below command to add the multimedia layer
+
+	# cd <path-of-project>
+	# . environment-setup-x86_64-wrlinuxsdk-linux
+	# . oe-init-build-env
+	# bitbake-layers add-layer <path-of-bsplayer>/rcar-multimedia
+
+9.5 Build Image
+---------------
+
+During building project, there will some packages needing to be downloaded.
+So, firstly, it is need to enable network by setting BB_NO_NETWORK as '0' in <path-of-project>/build/conf/local.conf file.
+And then run below command to build image
+
+	# bitbake wrlinux-image-glibc-std
+
+9.6 Verify Graphic feature
+--------------------------
+
+Case 1:
+Connect with kingfisher board normal HDMI port(CN49), mode 1920x1080@60.0
+Run below command:
+
+	# es2gears_wayland
+
+Output as below:
+
+	EGL_VERSION = 1.4 build 1.10@5187610
+	vertex shader info: Success.
+
+	fragment shader info: Success.
+
+	info:
+	NOTE: This GSX library has the time limitation by reason of an evaluation module.
+	102 frames in 5.0 seconds = 20.266 FPS
+	101 frames in 5.1 seconds = 19.937 FPS
+	100 frames in 5.0 seconds = 20.000 FPS
+	100 frames in 5.0 seconds = 20.000 FPS
+	100 frames in 5.0 seconds = 20.000 FPS
+
+Case 2:
+Connect with h3sd board mini HDMI port(CN4), mode 1680x1050@60.0
+Run below command:
+
+	# es2gears_wayland
+
+Output as below:
+
+	EGL_VERSION = 1.4 build 1.10@5187610
+	vertex shader info: Success.
+
+	fragment shader info: Success.
+
+	info:
+	NOTE: This GSX library has the time limitation by reason of an evaluation module.
+	202 frames in 5.0 seconds = 40.327 FPS
+	200 frames in 5.0 seconds = 40.000 FPS
+	200 frames in 5.0 seconds = 40.000 FPS
+	200 frames in 5.0 seconds = 40.000 FPS
+	200 frames in 5.0 seconds = 40.000 FPS
