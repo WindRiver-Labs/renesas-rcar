@@ -30,7 +30,7 @@ This BSP supports the following boards:
 This BSP supports the following features.
 
   o General Platform
-	+ KGDBoC
+	+ Perf
 
   o Bus
 	+ I2C: On-Chip I2C controller
@@ -39,7 +39,7 @@ This BSP supports the following features.
 
   o Network
 	+ Ethernet: AVB 100/1000 MAC ethernet controller
-	+ Bluetooth: TI WL18XX BT-WF module
+	+ Bluetooth: TI WL18XX BT-WF module, only support BT feature by default
 
   o USB
 	+ USB Host: 1 OHCI/EHCI compatible host controller in the chip
@@ -49,13 +49,12 @@ This BSP supports the following features.
   o Storage
 	+ SD/MMC: 2 SD card slot, one on the top-board(H3SK/M3SK), another is on the base-board(Kingfisher)
 	+ eMMC: support 1bit/4bit/8bit SDR/DDR mode, 8G bytes
-	+ Flash: HYPERFLASH 64 MB HYPER FLASH
-	         QSPI FLASH 16MB QSPI
 
   o User_Interface_Multimedia
 	+ AUDIO:
 		+ AK4613VQ codec, on the top-board(H3SK/M3SK)
 		+ pcm3168a codec, on the base-board(Kingfisher)
+		+ wl1837 codec, on the base-board(Kingfisher)
 	+ HDMI: On-Chip HDMI controller
 
   o Power Mgmt
@@ -86,6 +85,7 @@ The following features are not supported and validated:
 	x Secure Engine
 	x SIM card
 	x FM Multiplex Demodulator
+	x WIFI: TI WL18XX BT-WF module, WIFI feature is not support by default
 
 4. BSP Notes
 ============
