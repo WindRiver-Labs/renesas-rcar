@@ -323,6 +323,71 @@ Run below commands to play aduio from another device that connects with renesas-
 
 Connect headset or speaker with CN32/CN33 on base-board(Kingfisher), and then play music on target device.
 
+5.7 CANFD BUS
+-------------
+
+There are 2 CANFD BUS ports(canfd0 and canfd1) on base-board(Kingfisher), CN17 and CN18.
+They use the same ports with CAN BUS(can0 and can1). The CAN BUS is enabled by default.
+So, if customer wants to use CANFD BUS, it is need to enable canfd0 and canfd1, and then
+disable can0 and can1 in dts file.
+
+5.7.1 Enable CANFD BUS
+----------------------
+
+There are 2 methods to enable canfd0 and canfd1 while disable can0 and can1.
+
+ - Modify DTS file ulcb-kf.dtsi manually
+   Firstly, disable can0 and can1 nodes in ulcb-kf.dtsi
+	&can0 {
+		...
+		status = "disabled";
+	};
+
+	&can1 {
+		...
+		status = "disabled";
+	};
+    Secondly, enable canfd node in ulcb-kf.dtsi
+	&canfd {
+		...
+		status = "okay";
+		...
+	};
+
+ - Modify DTB file with fdt command during boot system
+   There is an example as below, download dtb file with tftp
+	# tftpboot 0x48000000 <host ip>:<path-to-dtb>/r8a7795-h3ulcb-kf.dtb
+	# fdt addr 0x48000000
+	# fdt resize
+	# fdt set /soc/can@e6c30000 status disabled
+	# fdt set /soc/can@e6c38000 status disabled
+	# fdt set /soc/can@e66c0000 status okay
+
+5.7.2 Verify CANFD BUS
+----------------------
+The verification method is the similar with verifying CAN BUS.
+Connect the 2 ports(CN17 and CN18) with cable and run below command.
+
+5.7.2.1 Set up canfd0 and canfd1
+------------------------------
+
+	# ip link set can0 up type can bitrate 125000 dbitrate 800000 fd on
+	# ip link set can1 up type can bitrate 125000 dbitrate 800000 fd on
+
+5.7.2.2 send data from canfd1 and dump data from canfd0
+-------------------------------------------------------
+
+	# candump can0 &
+	# cangen can1
+	or
+	# cansend can1 5A1#11.22.33.44.55.66.77.88
+
+5.7.2.2 check the data sending and receiving on canfd0 and canfd1
+-----------------------------------------------------------------
+
+	# ip -details -statistics link show can0
+	# ip -details -statistics link show can1
+
 
 6. kexec/kdump
 ==============
