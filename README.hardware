@@ -18,8 +18,8 @@ This BSP supports the following boards:
 2. Change History
 =================
 
-  - 2019/09 (LINUXPG-12): Wind River Linux10.18 RCPL11, support H3SK/M3SK boards 
-			  based on Renesas SDK rcar-3.9.4
+  - 2019/09 (LINUXPG-105): WindRiver CI/CD branch support, support H3SK/M3SK boards 
+			  based on Yocto Community kernel
 
 3. BSP Features
 ===============
@@ -39,7 +39,7 @@ This BSP supports the following features.
 
   o Network
 	+ Ethernet: AVB 100/1000 MAC ethernet controller
-	+ Bluetooth: TI WL18XX BT-WF module, only support BT feature by default
+	+ WIFI: TI WL18XX BT-WF module
 	+ CAN/CANFD: Transceiver TCAN332GDCNT(TI)
 
   o USB
@@ -55,8 +55,8 @@ This BSP supports the following features.
 	+ AUDIO:
 		+ AK4613VQ codec, on the top-board(H3SK/M3SK)
 		+ pcm3168a codec, on the base-board(Kingfisher)
-		+ wl1837 codec, on the base-board(Kingfisher)
-	+ HDMI: On-Chip HDMI controller
+
+	+ HDMI: On-Chip HDMI controller, support audio and video
 
   o Power Mgmt
 	+ Suspend to freeze
@@ -86,7 +86,7 @@ The following features are not supported and validated:
 	x Secure Engine
 	x SIM card
 	x FM Multiplex Demodulator
-	x WIFI: TI WL18XX BT-WF module, WIFI feature is not support by default
+	x wl1837 codec, BT audio
 
 4. BSP Notes
 ============

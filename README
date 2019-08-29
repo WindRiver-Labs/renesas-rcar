@@ -108,73 +108,63 @@ and are copied to the directory of the TFTP server.
 
 There are 2 codec chips on top-board(H3SK/M3SK) and base-board(Kingfisher) separately.
 codec ak4613 is on the top-board and codec pcm3168a is on base-board.
-We can switch sound card dynamically with below command:
-
-	# pactl set-default-sink <sound card>
 
 5.1.1 Audio playback with codec ak4613
 --------------------------------------
 
-<1>. switch to codec ak4613, output mode
+Connect speaker with CN8 on H3SK board, and then run below commands
 
-	# pactl set-default-sink ak4613_output
+<1>. Set output gain
 
-<2>. Set output gain
+	# amixer -c 0 sset "DVC Out" 1%
 
-	# amixer -c 1 sset "DVC Out" 1%
+<2>. Play sound
 
-<3>. Play sound files
-
-	speaker-test -c 2 -t wav -W /usr/share/sounds/alsa/
+	# speaker-test -c2 -twav
 
 5.1.2 Audio capture with codec ak4613
 -------------------------------------
 
-<1>. switch to codec ak4613, input mode
+Connect microphone with CN9 on H3SK board, and then run below commands
 
-	# pactl set-default-source ak4613_input 
+<1>. Set input gain
 
-<2>. Set input gain
-
-	# amixer -c 1 sset "DVC In" 5%
-
-<3>. Record sound
-
-	# arecord -r 44100 -f S16_LE -c 2 -d 5 record.wav
-
-<4>. palyback the record file
-	# pactl set-default-sink ak4613_output
-	# amixer -c 1 sset "DVC Out" 1%
-	# aplay record.wav
-
-5.1.3 Audio playback with codec pcm3168a
-----------------------------------------
-
-<1>. switch to codec pcm3168a, output mode
-
-	# pactl set-default-sink pcm3168a_output
-
-<2>. Play sound files
-
-	speaker-test -c 2 -t wav -W /usr/share/sounds/alsa/
-
-5.1.4 Audio capture with codec pcm3168a
----------------------------------------
-
-<1>. switch to codec pcm3168a, input mode
-
-	# pactl set-default-source pcm3168a_input 
+	# amixer -c 0 sset "DVC In" 5%
 
 <2>. Record sound
 
 	# arecord -r 44100 -f S16_LE -c 2 -d 5 record.wav
 
 <3>. palyback the record file
-	# pactl set-default-sink pcm3168a_output
+	# amixer -c 0 sset "DVC Out" 1%
 	# aplay record.wav
 
-Note: Audio feature is only available when setup project with wrlinux-std-sato distro
-that includes DISTRO_FEATURES "pulseaudio".
+5.1.3 Playback HDMI audio
+-------------------------
+
+Connect speaker with HDMI monitor audio port, and then run below command
+
+	# speaker-test -c2 -twav -Dhw:0,1
+
+5.1.4 Audio playback with codec pcm3168a
+----------------------------------------
+
+Connect speaker with CN32 bottom port on Kingfisher board, and then run below command
+
+	# speaker-test -c2 -twav -D plughw:0,2
+
+5.1.5 Audio capture with codec pcm3168a
+---------------------------------------
+
+Connect microphone with CN28 bottom port on Kingfisher board, and then run below commands
+
+<1>. Record sound
+
+	# arecord -D plughw:0,3 -r 44100 -f S16_LE -c 2 -d 5 record.wav
+
+<2>. palyback the record file
+
+	# aplay -D plughw:0,2 record.wav 
 
 5.2 CAN Bus
 -----------
@@ -187,8 +177,6 @@ Connect the 2 ports with cable and run below command to verify CAN bus feature.
 
 	# ip link set can0 up type can bitrate 125000
 	# ip link set can1 up type can bitrate 125000
-	# ifconfig can0 txqueuelen 1000
-	# ifconfig can1 txqueuelen 1000
 
 5.2.2 send data from can1 and dump data from can0
 -------------------------------------------------
@@ -251,172 +239,45 @@ Connect CN13 on base-board(Kingfisher) with U-disk.
 There is a mini-pcie port on base-board(Kingfisher) CN15.
 The following PCIe peripherals:
 
-	Intel Centrino Advanced-N 6200
-	Intel Centrino Wireless-N 1030
+	RTL8723BE PCIe Wireless Network Adapter
 
  are used to verify PCIe feature with the following steps:
 
 Simply add line as follows to ${buildprj}/build/conf/local.conf:
 
-	KERNEL_FEATURES_append = " features/iwlwifi/iwlwifi.scc"
+	KERNEL_FEATURES_append = " features/wifi/wifi-pci.scc"
 
-This will include the iwlwifi and mac80211 kernel modules in
+This will include the rtlwifi and mac80211 kernel modules in
 the root filesystem.
 
-Built and install them:
+Build and install them:
 
-	# bitbake wrlinux-image-glibc-xxx
-
-Copy relevant WiFi card firmware (Intel 6200 WiFi firmware: iwlwifi-6000-4.ucode)
-of to /lib/firmware of the target image.
+	# bitbake wrlinux-image-std
 
 Execute the following commands to validate the WiFi cards:
 
-	# ifconfig wlan0 up
-	# iw wlan0 scan
-	# iw dev wlan0 connect <AP essid>
-	# dhclient wlan0
-	# ping <AP address> -i wlan0 -c 5
+	# ifconfig wlan<idx> up
+	# iw wlan<idx> scan
+	# iw dev wlan<idx> connect <AP essid>
+	# dhclient wlan<idx>
+	# ping <AP address> -i wlan<idx> -c 5
 
-5.6 Bluetooth
--------------
+5.6 Wireless Module
+-------------------
 
-There is a TI-WL18xx BT-WF modules on base-board(Kingfisher), customer could connect
-other BT device with renesas-rcar platform. Below 2 examples are able to be used to
-verify Bluetooth feature.
+There is a BT-WIFI module on base-board(Kingfisher), U52. Wifi component connects
+to SoC with sdio(sdhi3) interface.
 
-5.6.1 Scan other BT devices
----------------------------
-Run below commands to Scan other BT devices
+Customer can execute the following commands to validate the WiFi module:
 
-	# hciconfig hci0 up
-	# hcitool -i hci0 scan
-
-5.6.2 Play audio with Bluetooth
--------------------------------
-Run below commands to play aduio from another device that connects with renesas-rcar platform by Bluetooth.
-
-	# bluetoothctl
-	Agent registered
-	[bluetooth]# power on
-	Changing power on succeeded
-	[bluetooth]# agent on
-	Agent is already registered
-	[bluetooth]# default-agent
-	Default agent request successful
-	[bluetooth]# scan on
-	Discovery started
-	..(snip)..  !!! <-- Please look for taget device !!!
-	[bluetooth]# scan off
-	..(snip)..
-	[bluetooth]# pair <MAC address of target device>
-	..(snip)..
-	Request confirmation
-	[agent] Confirm passkey 285311 (yes/no): yes
-	..(snip)..
-	Pairing successful
-	[bluetooth]# connect <MAC address of target device>
-	..(snip)..
-	Connection successful
-	..(snip)..
-	[Target device name]# quit
-
-Connect headset or speaker with CN32/CN33 on base-board(Kingfisher), and then play music on target device.
-
-5.7 CANFD BUS
--------------
-
-There are 2 CANFD BUS ports(canfd0 and canfd1) on base-board(Kingfisher), CN17 and CN18.
-They use the same ports with CAN BUS(can0 and can1). The CAN BUS is enabled by default.
-So, if customer wants to use CANFD BUS, it is need to enable canfd0 and canfd1, and then
-disable can0 and can1 in dts file.
-
-5.7.1 Enable CANFD BUS
-----------------------
-
-There are 2 methods to enable canfd0 and canfd1 while disable can0 and can1.
-
- - Modify DTS file ulcb-kf.dtsi manually
-   Firstly, disable can0 and can1 nodes in ulcb-kf.dtsi
-	&can0 {
-		...
-		status = "disabled";
-	};
-
-	&can1 {
-		...
-		status = "disabled";
-	};
-    Secondly, enable canfd node in ulcb-kf.dtsi
-	&canfd {
-		...
-		status = "okay";
-		...
-	};
-
- - Modify DTB file with fdt command during boot system
-   There is an example as below, download dtb file with tftp
-	# tftpboot 0x48000000 <host ip>:<path-to-dtb>/r8a7795-h3ulcb-kf.dtb
-	# fdt addr 0x48000000
-	# fdt resize
-	# fdt set /soc/can@e6c30000 status disabled
-	# fdt set /soc/can@e6c38000 status disabled
-	# fdt set /soc/can@e66c0000 status okay
-
-5.7.2 Verify CANFD BUS
-----------------------
-The verification method is the similar with verifying CAN BUS.
-Connect the 2 ports(CN17 and CN18) with cable and run below command.
-
-5.7.2.1 Set up canfd0 and canfd1
-------------------------------
-
-	# ip link set can0 up type can bitrate 125000 dbitrate 800000 fd on
-	# ip link set can1 up type can bitrate 125000 dbitrate 800000 fd on
-
-5.7.2.2 send data from canfd1 and dump data from canfd0
--------------------------------------------------------
-
-	# candump can0 &
-	# cangen can1
-	or
-	# cansend can1 5A1#11.22.33.44.55.66.77.88
-
-5.7.2.2 check the data sending and receiving on canfd0 and canfd1
------------------------------------------------------------------
-
-	# ip -details -statistics link show can0
-	# ip -details -statistics link show can1
+	# ifconfig wlan<idx> up
+	# iw wlan<idx> scan
+	# iw dev wlan<idx> connect <AP essid>
+	# dhclient wlan<idx>
+	# ping <AP address> -i wlan<idx> -c 5
 
 
-6. kexec/kdump
-==============
-
-You need to add feature/kexec,feature/kdump templates support as follow:
-
-	./wrlinux-x/setup.sh --machines renesas-rcar --templates feature/kexec,feature/kdump
-
-6.1 kexec
----------
-
-	kexec -l  /root/Image.gz --append="`cat /proc/cmdline`"
-	kexec -e
-
-6.2 kdump
----------
-
-Add crashkernel=460M@1280M to the kernel cmdline
-   kexec -p /root/Image.gz --append="$your-bootcmd"
-   echo c > /proc/sysrq-trigger
-
-Note:
-Before booting the second kernel, add "maxcpus=1 cma=128M" to the boot parameter.
-
-For more detailed info about kdump, refer to Documentation/kdump/kdump.txt
-in the kernel source tree.
-
-
-7. Creating Partitioned Images(WIC)
+6. Creating Partitioned Images(WIC)
 ===================================
 
 User can use the OpenEmbedded Image Creator, wic, to create the properly
@@ -430,19 +291,19 @@ This BSP supports disk images for SD card.
 After build the project, user will get a WIC image under the directory
 tmp-glibc/deploy/images/<bsp name>/ ,such as:
 
-tmp-glibc/deploy/images/renesas-rcar/wrlinux-image-glibc-std-renesas-rcar.wic
+tmp-glibc/deploy/images/renesas-rcar/wrlinux-image-std-renesas-rcar-h3.wic
 
 There are two partitions in this WIC images, the first one is to hold the boot
 images, the second is the related root file system.
 
-7.1 Burn images to SD card
+6.1 Burn images to SD card
 --------------------------
 
 To burn WIC images to SD card, run below command:
 
-	$ sudo dd if=wrlinux-image-glibc-<rootfs_type>-renesas-rcar.wic of=/dev/sdx
+	$ sudo dd if=wrlinux-image-std-renesas-rcar-h3.wic of=/dev/sdx
 
-7.2 Set uboot env
+6.2 Set uboot env
 -----------------
 
 Board can boot automatically by set the below uboot environment variables:
@@ -455,127 +316,17 @@ Board can boot automatically by set the below uboot environment variables:
 
 => saveenv; run bootcmd;
 
-7.3 Delpoy sd card
+6.3 Delpoy sd card
 ------------------
 
 Insert sd card into CN6 of the top-board(H3SK/M3SK)
 
 
-8. Multilib
+7. Multilib
 ===========
 
 By default, this BSP is configured as a 64-bit kernel and 64-bit userspace.
 If a full 32-bit filesystem is necessary, use the prefix "lib32-" before
 the expected target image as follows:
 
-	# bitbake lib32-wrlinux-image-glibc-std
-
-
-9. Multimedia Layer
-===================
-
-This layer includes recipes of graphic and multimedia feature.
-If customer wants to enable GPU hardware accelerator, please add this
-layer before building image. With this layer, customer can get a
-image with weston desktop based on wayland protocol.
-
-Next sections show how to use the multimedia layer.
-
-9.1 Setup project with weston template
---------------------------------------
-
-The GPU hardware accelerating library is based on wayland protocol, and
-it is need to use weston as the desktop. So setup project with with weston template.
-Detail command as below:
-
-	# <path-of-wrlinux-x>/setup.sh --machine renesas-rcar-h3 --distro wrlinux-std-sato --dl-layers --all-layers --accept-eula=yes --templates feature/weston-demo
-
-Note: The distro should be wrlinux-std-sato.
-
-9.2 Download Library and kernel module
---------------------------------------
-
-Download below package with link https://www.renesas.com/us/en/software/D6003784.html
-R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-20190507.zip
-This package includes graphic and multimedia libraries.
-
-Download below package with link https://www.renesas.com/us/en/software/D6003785.html
-R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-20190507.zip
-This package include related kernel driver modules.
-
-
-9.3 Deploy Library and kernel module
-------------------------------------
-
-Put above 2 packages into <path-of-bsplayer>/rcar-multimedia/multimedia-graphics-library,
-and then use script copy_library_softwares.sh to deploy them. Detail commands as below:
-
-	# export PKGS_DIR=<path-of-bsplayer>/rcar-multimedia/multimedia-graphics-library
-	# cd <path-of-bsplayer>/rcar-multimedia/
-	# sh script/copy_library_softwares.sh -f $PKGS_DIR
-	# unset PKGS_DIR
-
-
-9.4 Add Multimedia Layer
-------------------------
-
-Run below command to add the multimedia layer
-
-	# cd <path-of-project>
-	# . environment-setup-x86_64-wrlinuxsdk-linux
-	# . oe-init-build-env
-	# bitbake-layers add-layer <path-of-bsplayer>/rcar-multimedia
-
-9.5 Build Image
----------------
-
-During building project, there will some packages needing to be downloaded.
-So, firstly, it is need to enable network by setting BB_NO_NETWORK as '0' in <path-of-project>/build/conf/local.conf file.
-And then run below command to build image
-
-	# bitbake wrlinux-image-glibc-std
-
-9.6 Verify Graphic feature
---------------------------
-
-Case 1:
-Connect with kingfisher board normal HDMI port(CN49), mode 1920x1080@60.0
-Run below command:
-
-	# es2gears_wayland
-
-Output as below:
-
-	EGL_VERSION = 1.4 build 1.10@5187610
-	vertex shader info: Success.
-
-	fragment shader info: Success.
-
-	info:
-	NOTE: This GSX library has the time limitation by reason of an evaluation module.
-	102 frames in 5.0 seconds = 20.266 FPS
-	101 frames in 5.1 seconds = 19.937 FPS
-	100 frames in 5.0 seconds = 20.000 FPS
-	100 frames in 5.0 seconds = 20.000 FPS
-	100 frames in 5.0 seconds = 20.000 FPS
-
-Case 2:
-Connect with h3sd board mini HDMI port(CN4), mode 1680x1050@60.0
-Run below command:
-
-	# es2gears_wayland
-
-Output as below:
-
-	EGL_VERSION = 1.4 build 1.10@5187610
-	vertex shader info: Success.
-
-	fragment shader info: Success.
-
-	info:
-	NOTE: This GSX library has the time limitation by reason of an evaluation module.
-	202 frames in 5.0 seconds = 40.327 FPS
-	200 frames in 5.0 seconds = 40.000 FPS
-	200 frames in 5.0 seconds = 40.000 FPS
-	200 frames in 5.0 seconds = 40.000 FPS
-	200 frames in 5.0 seconds = 40.000 FPS
+	# bitbake lib32-wrlinux-image-std

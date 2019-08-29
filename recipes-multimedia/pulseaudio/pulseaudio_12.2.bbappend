@@ -1,1 +1,0 @@
-include ${@bb.utils.contains_any('MACHINE', 'renesas-rcar-h3 renesas-rcar-m3', 'pulseaudio-renesas-rcar.inc', '', d)}
