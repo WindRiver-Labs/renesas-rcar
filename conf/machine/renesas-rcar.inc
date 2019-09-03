@@ -24,4 +24,4 @@ MULTILIBS ?= "multilib:lib32"
 DEFAULTTUNE_virtclass-multilib-lib32 ?= "armv7athf-neon"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "linux-yocto"
-PREFERRED_VERSION_linux-yocto ?= "5.0%"
+PREFERRED_VERSION_linux-yocto ?= "5.2%"
