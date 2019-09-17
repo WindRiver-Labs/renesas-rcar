@@ -40,11 +40,11 @@ stated in each recipe (.bb file) unless other stated.
 The following table summarizes the valid Wind River Linux distros for this BSP.
 'Y' in each content cell stands for supported; 'N' stands for not supported:
 
-  +--------------+-------------+-------------+-------------+
-  | valid/distro |   wrlinux   | wrlinux-cgl | wrlinux-ovp |
-  +--------------+-------------+-------------+-------------+
-  |    valid     |      Y      |      N      |      N      |
-  +--------------+-------------+-------------+-------------+
+  +--------------+-------------+-------------+-------------+------------------+
+  | valid/distro |   wrlinux   | wrlinux-cgl | wrlinux-ovp | wrlinux-std-sato |
+  +--------------+-------------+-------------+-------------+------------------+
+  |    valid     |      Y      |      N      |      N      |	     Y	      |
+  +--------------+-------------+-------------+-------------+------------------+
 
 For the supported kernel type for this BSP, please check the TARGET_SUPPORTED_KTYPES
 by running 'bitbake -e virtual/kernel | grep "^TARGET_SUPPORTED_KTYPES="'.
@@ -70,7 +70,7 @@ kernel (git whatchanged <kernel_type>..<bsp_name>). For example:
 
 4.1.1 Prepare Kernel, DTB, NFS and TFTP servers
 -----------------------------------------------
-The files in below example can be found in <buildprj>/tmp-glibc/deploy/images/renesas-rcar
+The files in below example can be found in <buildprj>/tmp-glibc/deploy/images/renesas-rcar-h3
 and are copied to the directory of the TFTP server.
 
 
@@ -90,7 +90,7 @@ and are copied to the directory of the TFTP server.
 4.1.3 Download dtb
 ------------------
 
-	# tftp 0x48080000 <Board Name>.dtb
+	# tftp 0x48000000 <Board Name>.dtb
 
 4.1.4 Set bootargs and boot system
 ----------------------------------
