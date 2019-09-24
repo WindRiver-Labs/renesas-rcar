@@ -14,3 +14,6 @@ IMAGE_INSTALL_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'x11 pulseaudio
 							pulseaudio-module-cli pulseaudio-module-remap-sink \
 							pulseaudio-module-remap-source pulseaudio-module-loopback', '', d)} \
 "
+IMAGE_INSTALL_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'weston-demo', 'pulseaudio-server \
+							pulseaudio-misc', '', d)} \
+"
