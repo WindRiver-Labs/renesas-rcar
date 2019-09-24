@@ -405,7 +405,7 @@ You need to add feature/kexec,feature/kdump templates support as follow:
 6.2 kdump
 ---------
 
-Add crashkernel=460M@1280M to the kernel cmdline
+Add crashkernel=380M@1408M to the kernel cmdline
    kexec -p /root/Image.gz --append="$your-bootcmd"
    echo c > /proc/sysrq-trigger
 
