@@ -1,0 +1,53 @@
+From 843fb79f630a8865777353b11a3d981d4f5bd91b Mon Sep 17 00:00:00 2001
+From: Hongxu Jia <hongxu.jia@windriver.com>
+Date: Fri, 18 Oct 2019 05:39:26 -0400
+Subject: [PATCH] scripts: Makefile.autoconf: ensure sync is done if ln is slow
+
+There have been issues where the compile fails due to 'missing'
+headers. The build logs indicate that the 'arch/include' link is being
+created correctly but that the following build step, a compile which
+depends on an arch header, fails due to the header being 'missing'.
+
+Without more evidence than what is found in the build logs I can't
+determine any other culprit other than the build host's filesystem
+being at fault. Using 'sync' is the only mechanism which should
+hopefully work around any host filesystem deficiency.
+
+Upstream-Status: Inappropriate [no community reports of this issue]
+
+Signed-off-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
+---
+ scripts/Makefile.autoconf | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/Makefile.autoconf b/scripts/Makefile.autoconf
+index 00b8fb34aa..19b9ebf693 100644
+--- a/scripts/Makefile.autoconf
++++ b/scripts/Makefile.autoconf
+@@ -129,14 +129,20 @@ ifneq ($(KBUILD_SRC),)
+ 	else									\
+ 		dest=arch/$(ARCH)/include/asm/arch-$(if $(SOC),$(SOC),$(CPU));	\
+ 	fi;									\
+-	ln -fsn $(KBUILD_SRC)/$$dest include/asm/arch
++	ln -fsn $(KBUILD_SRC)/$$dest include/asm/arch; \
++	if [ ! -L include/asm/arch ]; then					\
++		sync;								\
++	fi
+ else
+ 	$(Q)if [ -d arch/$(ARCH)/mach-$(SOC)/include/mach ]; then	\
+ 		dest=../../mach-$(SOC)/include/mach;			\
+ 	else								\
+ 		dest=arch-$(if $(SOC),$(SOC),$(CPU));			\
+ 	fi;								\
+-	ln -fsn $$dest arch/$(ARCH)/include/asm/arch
++	ln -fsn $$dest arch/$(ARCH)/include/asm/arch;			\
++	if [ ! -L arch/$(ARCH)/include/asm/arch ]; then			\
++		sync;				   			\
++	fi
+ endif
+ endif
+ 
+-- 
+2.23.0
+
