@@ -11,5 +11,5 @@ SRC_URI_append_rcar-gen3 = " \
     file://0008-ARM-rmobile-Add-R8A7795-H3ULCB-HAD-board-support.patch \
     file://0009-arm-renesas-Enable-RPC-HF-MTD-support-for-all-Salvat.patch \
     file://0010-arm-renesas-Enable-RPC-HF-MTD-support-for-all-ULCB-b.patch \
-    file://0011-scripts-Makefile.autoconf-ensure-sync-is-done-if-ln-.patch \
+    file://0001-fix-parallel-issue-on-symlink-recreation.patch \
 "

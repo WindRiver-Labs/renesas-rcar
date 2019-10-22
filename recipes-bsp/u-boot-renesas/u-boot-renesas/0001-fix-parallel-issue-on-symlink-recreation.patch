@@ -1,0 +1,58 @@
+From 649102bd7c21df1f12798275faa60f6029605165 Mon Sep 17 00:00:00 2001
+From: Hongxu Jia <hongxu.jia@windriver.com>
+Date: Tue, 22 Oct 2019 06:44:33 -0400
+Subject: [PATCH] fix parallel issue on symlink recreation
+
+Add a new rule `include/asm/arch' to avoid symlink recreation
+issue while reentry create_symlink multiple times
+
+In this situation, symlink will not be recreated
+
+The same reason to new rule `arch/$(ARCH)/include/asm/arch'
+
+Upstream-Status: Pending
+
+Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
+---
+ scripts/Makefile.autoconf | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/Makefile.autoconf b/scripts/Makefile.autoconf
+index 00b8fb34aa..63d5a58e7a 100644
+--- a/scripts/Makefile.autoconf
++++ b/scripts/Makefile.autoconf
+@@ -120,9 +120,10 @@ include/config.h: scripts/Makefile.autoconf create_symlink FORCE
+ # make a symbolic link to that directory.
+ # Otherwise, create a symbolic link to arch/$(ARCH)/include/asm/arch-$(SOC).
+ PHONY += create_symlink
+-create_symlink:
+ ifdef CONFIG_CREATE_ARCH_SYMLINK
+ ifneq ($(KBUILD_SRC),)
++create_symlink: include/asm/arch
++include/asm/arch:
+ 	$(Q)mkdir -p include/asm
+ 	$(Q)if [ -d $(KBUILD_SRC)/arch/$(ARCH)/mach-$(SOC)/include/mach ]; then	\
+ 		dest=arch/$(ARCH)/mach-$(SOC)/include/mach;			\
+@@ -130,7 +131,9 @@ ifneq ($(KBUILD_SRC),)
+ 		dest=arch/$(ARCH)/include/asm/arch-$(if $(SOC),$(SOC),$(CPU));	\
+ 	fi;									\
+ 	ln -fsn $(KBUILD_SRC)/$$dest include/asm/arch
+-else
++else # ifneq ($(KBUILD_SRC),)
++create_symlink: arch/$(ARCH)/include/asm/arch
++arch/$(ARCH)/include/asm/arch:
+ 	$(Q)if [ -d arch/$(ARCH)/mach-$(SOC)/include/mach ]; then	\
+ 		dest=../../mach-$(SOC)/include/mach;			\
+ 	else								\
+@@ -138,6 +141,8 @@ else
+ 	fi;								\
+ 	ln -fsn $$dest arch/$(ARCH)/include/asm/arch
+ endif
++else # ifdef CONFIG_CREATE_ARCH_SYMLINK
++create_symlink:
+ endif
+ 
+ PHONY += FORCE
+-- 
+2.23.0
+
