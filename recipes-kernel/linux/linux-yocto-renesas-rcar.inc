@@ -5,7 +5,6 @@ FILESEXTRAPATHS_prepend_rcar-gen3 := "${THISDIR}/files:"
 
 SRC_URI_append_rcar-gen3 = " \
     file://0001-wl18xx-do-not-invert-IRQ-on-WLxxxx-side.patch \
-    file://0001-usb-hub-disable-autosuspend-for-SMSC-hubs.patch \
 "
 
 KERNEL_VERSION_SANITY_SKIP = "1"
